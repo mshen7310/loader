@@ -1,0 +1,1 @@
+module.exports = 'bb.testing.1.js';
