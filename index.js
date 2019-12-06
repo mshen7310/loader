@@ -28,17 +28,15 @@ function parse_name(result, filename, envname){
 function load(fullpath, env, keep_top_level_container, envname){
 	const st = fs.lstatSync(fullpath);
 	if(st.isFile()){
-		try{
-			// console.log('load', fullpath);
-			return require(fullpath);
-
-		} catch(err){
-			console.error(err);
-		}
+		return require(fullpath);
 	} else if(st.isDirectory()) {
 		return walk(fullpath, env, keep_top_level_container, envname);
 	} else if(st.isSymbolicLink()){
-		return load(fs.readlinkSync(fullpath), env, keep_top_level_container, envname);
+		let p = fs.readlinkSync(fullpath);
+		if(!libpath.isAbsolute(p)){
+			p = libpath.resolve(libpath.dirname(fullpath), p);
+		}
+		return load(p, env, keep_top_level_container, envname);
 	}
 }
 function walk(dir, env, keep_top_level_container, envname){
