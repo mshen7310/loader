@@ -39,20 +39,6 @@ describe(`Adapter Testing ${__filename}`, function(){
 			bb:'c.json'
 		}));
 	});
-
-	it('should load module', function(){
-		const p = plugin.module({}, 'test/test.dir');
-		assert.ok(match(p, {test:match.function}));
-		const u = p.test(undefined, 'linkaa.js', 'testing');
-		assert.ok(match(u, match.funobj({
-			a:['a.testing.json','a.testing.js'],
-			b:['b.testing.js','b.testing.json'],
-			c:['c.js','c.json']
-		})));
-		assert.throws(()=>plugin.module(null, 'hello'));
-		assert.throws(()=>plugin.module({}));
-		assert.throws(()=>plugin.module());
-	});
 	it('should load symbol link', function(){
 		const p = plugin('test/test.dir/linkaa', 'testing');
 		assert.ok(match(p, {
@@ -64,7 +50,19 @@ describe(`Adapter Testing ${__filename}`, function(){
 	it('should throw error on invalid environment name', function(){
 		assert.throws(()=>plugin('test/test.dir', 'testing', 'production'));
 	});
-
+	it('should load module', function(){
+		const p = plugin.module('test/test.dir');
+		assert.ok(match(p, match.function));
+		const u = p(undefined, 'linkaa.js', 'testing');
+		assert.ok(match(u, match.function));
+		assert.ok(match(u, match.funobj(p)));
+		assert.ok(match(u, match.funobj({
+			a:['a.testing.json','a.testing.js'],
+			b:['b.testing.js','b.testing.json'],
+			c:['c.js','c.json']
+		})));
+		assert.throws(()=>plugin.module());
+	});
 });
 
 

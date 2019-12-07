@@ -88,10 +88,9 @@ function loadenv(fullpath, env, ...envname){
 }
 loadenv.keep_top_level_container = true;
 
-loadenv.module = function (module_obj, module_dir){
-	if(module_obj && module_dir){
-		const module_entry_name = libpath.basename(module_dir).split('.')[0];
-		module_obj[module_entry_name] = function (loadfn, file_name, env, ...envname){
+loadenv.module = function (module_dir){
+	if(module_dir){
+		return function ret(loadfn, file_name, env, ...envname){
 			const module_name = libpath.basename(file_name).split('.')[0];
 			const path = libpath.resolve(module_dir, module_name);
 			const entries = loadenv(path, env ? env : process.env.NODE_ENV, ...envname);
@@ -99,14 +98,11 @@ loadenv.module = function (module_obj, module_dir){
 				loadfn = a=>a;
 			}
 			Object.keys(entries).forEach(k=>{
-				module_obj[module_entry_name][k] = loadfn(entries[k]);
+				ret[k] = loadfn(entries[k]);
 			});    
-			return module_obj[module_entry_name];
+			return ret;
 		};
-		return module_obj;
-	} else if(!module_obj){
-		throw Error(`Invalid 'module_obj(${module_obj})'`);
-	} else if(!module_dir){
+	} else {
 		throw Error(`Invalid 'module_dir(${module_dir})'`);
 	}
 };
