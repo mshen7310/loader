@@ -41,12 +41,18 @@ describe(`Adapter Testing ${__filename}`, function(){
 	});
 
 	it('should load module', function(){
-		const p = plugin('test/test.dir/aa', 'testing');
-		assert.ok(match(p, {
+		const p = plugin.module({}, 'test/test.dir');
+		assert.ok(match(p, {test:match.function}));
+		const u = p.test(undefined, 'linkaa.js', 'testing');
+		console.log(u);
+		assert.ok(match(u, {
 			a:['a.testing.json','a.testing.js'],
 			b:['b.testing.js','b.testing.json'],
 			c:['c.js','c.json']
 		}));
+		assert.throws(plugin.module(null, 'hello'));
+		assert.throws(plugin.module({}));
+		assert.throws(plugin.module());
 	});
 	it('should load symbol link', function(){
 		const p = plugin('test/test.dir/linkaa', 'testing');

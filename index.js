@@ -5,7 +5,7 @@ const libpath = require('path');
 
 function parse_name(result, filename, envname){
 	if(result && filename){
-		//started by a viable js field name, followed by any viable sequence of chars
+		//started by a js viable/field name, followed by any viable sequence of chars
 		const m = filename.match(/^([a-z_$][a-z0-9_$]*)(.*)$/i);
 		if(m){
 			const ret = {
@@ -47,13 +47,13 @@ function walk(dir, env, keep_top_level_container, envname){
 	}
 	Object.keys(tmp).forEach(k=>{
 		// console.log(tmp[k], 1);
-		const env_specific = tmp[k].filter(v=>env ? v.env[env] : match.is_empty(v.env));
+		const env_specific = tmp[k].filter(v=>env ? v.env[env] : match.empty(v.env));
 		//  console.log(env_specific, 2);
 		if(env_specific.length > 0){
 			tmp[k] = env_specific;
 		}
 		
-		tmp[k] = tmp[k].map(v=>load(libpath.resolve(dir,v.file), env, false, envname)).filter(match.not(match.is_undefined));
+		tmp[k] = tmp[k].map(v=>load(libpath.resolve(dir,v.file), env, false, envname)).filter(match.not(match.undefined));
 		if(tmp[k].length == 1){
 //			console.log('reduce single element array to object', k);
 			tmp[k] = tmp[k][0];
@@ -88,6 +88,28 @@ function loadenv(fullpath, env, ...envname){
 }
 loadenv.keep_top_level_container = true;
 
+loadenv.module = function (module_obj, module_dir){
+	if(module_obj && module_dir){
+		const module_entry_name = libpath.basename(module_dir).split('.')[0];
+		module_obj[module_entry_name] = function (loadfn, file_name, env, ...envname){
+			const module_name = libpath.basename(file_name).split('.')[0];
+			const path = libpath.resolve(module_dir, module_name);
+			const entries = loadenv(path, env ? env : process.env.NODE_ENV, ...envname);
+			if(typeof loadfn != 'function'){
+				loadfn = a=>a;
+			}
+			Object.keys(entries).forEach(k=>{
+				module_obj[module_entry_name][k] = loadfn(entries[k]);
+			});    
+			return module_obj[module_entry_name];
+		};
+		return module_obj;
+	} else if(!module_obj){
+		throw Error(`Invalid 'module_obj(${module_obj})'`);
+	} else if(!module_dir){
+		throw Error(`Invalid 'module_dir(${module_dir})'`);
+	}
+};
 module.exports = loadenv;
 
 
