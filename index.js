@@ -97,10 +97,11 @@ loadenv.module = function (module_dir){
 			if(typeof loadfn != 'function'){
 				loadfn = a=>a;
 			}
+			ret[module_name] = {};
 			Object.keys(entries).forEach(k=>{
-				ret[k] = loadfn(entries[k]);
+				ret[module_name][k] = loadfn(entries[k]);
 			});    
-			return ret;
+			return ret[module_name];
 		};
 	} else {
 		throw Error(`Invalid 'module_dir(${module_dir})'`);

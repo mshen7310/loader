@@ -54,13 +54,13 @@ describe(`Adapter Testing ${__filename}`, function(){
 		const p = plugin.module('test/test.dir');
 		assert.ok(match(p, match.function));
 		const u = p(undefined, 'linkaa.js', 'testing');
-		assert.ok(match(u, match.function));
-		assert.ok(match(u, match.funobj(p)));
-		assert.ok(match(u, match.funobj({
+		assert.ok(match(u, match.object));
+		assert.ok(match(u, p.linkaa));
+		assert.ok(match(u, {
 			a:['a.testing.json','a.testing.js'],
 			b:['b.testing.js','b.testing.json'],
 			c:['c.js','c.json']
-		})));
+		}));
 		assert.throws(()=>plugin.module());
 	});
 });
