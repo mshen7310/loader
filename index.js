@@ -87,12 +87,7 @@ function loadenv(fullpath, env, ...envname){
 	return load(fullpath, env, loadenv.keep_top_level_container, envname);
 }
 loadenv.keep_top_level_container = true;
-loadenv.module_dir = '';
-loadenv.module = function(file_name, env){
-	const module_name = libpath.basename(file_name).split('.')[0];
-	const path = libpath.resolve(loadenv.module_dir, module_name);
-	return loadenv(path, env ? env : process.env.NODE_ENV);
-};
+
 module.exports = loadenv;
 
 

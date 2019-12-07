@@ -41,8 +41,7 @@ describe(`Adapter Testing ${__filename}`, function(){
 	});
 
 	it('should load module', function(){
-		plugin.module_dir = 'test/test.dir';
-		const p = plugin.module('aa');
+		const p = plugin('test/test.dir/aa', 'testing');
 		assert.ok(match(p, {
 			a:['a.testing.json','a.testing.js'],
 			b:['b.testing.js','b.testing.json'],
@@ -50,8 +49,7 @@ describe(`Adapter Testing ${__filename}`, function(){
 		}));
 	});
 	it('should load symbol link', function(){
-		plugin.module_dir = 'test/test.dir';
-		const p = plugin.module('linkaa');
+		const p = plugin('test/test.dir/linkaa', 'testing');
 		assert.ok(match(p, {
 			a:['a.testing.json','a.testing.js'],
 			b:['b.testing.js','b.testing.json'],
