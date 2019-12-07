@@ -13,6 +13,6 @@
     "nyc": "^14.1.1"
   },
   "dependencies": {
-    "structural-match": "^1.0.3"
+    "structural-match": "^1.0.5"
   }
 }
