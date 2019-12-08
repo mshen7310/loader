@@ -87,11 +87,11 @@ function loadenv(fullpath, env, ...envname){
 	return load(fullpath, env, loadenv.keep_top_level_container, envname);
 }
 loadenv.keep_top_level_container = true;
-
+loadenv.module_name = filename=>libpath.basename(filename).split('.')[0];
 loadenv.module = function (module_dir){
 	if(module_dir){
 		return function ret(loadfn, file_name, env, ...envname){
-			const module_name = libpath.basename(file_name).split('.')[0];
+			const module_name = loadenv.module_name(file_name);
 			const path = libpath.resolve(module_dir, module_name);
 			const entries = loadenv(path, env ? env : process.env.NODE_ENV, ...envname);
 			if(typeof loadfn != 'function'){
