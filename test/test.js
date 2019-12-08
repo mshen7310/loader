@@ -53,9 +53,8 @@ describe(`Adapter Testing ${__filename}`, function(){
 	it('should load module', function(){
 		const p = plugin.module('test/test.dir');
 		assert.ok(match(p, match.function));
-		const u = p(undefined, 'linkaa.js', 'testing');
+		const u = p('./test/aa.js', 'testing');
 		assert.ok(match(u, match.object));
-		assert.ok(match(u, p.linkaa));
 		assert.ok(match(u, {
 			a:['a.testing.json','a.testing.js'],
 			b:['b.testing.js','b.testing.json'],
