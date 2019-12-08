@@ -30,6 +30,9 @@ function load(fullpath, env, keep_top_level_container, envname){
 	if(st.isFile()){
 		return require(fullpath);
 	} else if(st.isDirectory()) {
+		if(fs.existsSync(libpath.resolve(fullpath, 'index.js')) || fs.existsSync(libpath.resolve(fullpath, 'package.json'))){
+			return require(fullpath);
+		}
 		return walk(fullpath, env, keep_top_level_container, envname);
 	} else if(st.isSymbolicLink()){
 		let p = fs.readlinkSync(fullpath);
@@ -110,10 +113,27 @@ function get_module_loader(module_dir){
 	}
 }
 
+function require_parant(filename){
+	try{
+		return require(filename);
+	} catch(err){
+		if(err instanceof Error){
+			if(/Cannot find module/.test(err.message)){
+				if(module.parent){
+					const dir = libpath.dirname(module.parent.filename);
+					const base = libpath.basename(filename);
+					return require_parant(libpath.resolve(dir, base));
+				}
+			}
+		}
+		throw err;
+	}
+}
+
 loadenv.module = function (module_dir){
 	const module_loader = get_module_loader(module_dir);
 	return function load(filename, env, ...envname){
-		let loadfn = require(filename);
+		let loadfn = require_parant(filename);
 		return load[loadenv.module_name(filename)] = module_loader(loadfn, filename, env ? env : process.env.NODE_ENV, ...envname);
 	};
 };
