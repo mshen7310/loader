@@ -87,13 +87,13 @@ function loadenv(fullpath, env, ...envname){
 	return load(fullpath, env, loadenv.keep_top_level_container, envname);
 }
 loadenv.keep_top_level_container = true;
-function get_module_name(filename){
+loadenv.module_name = function (filename){
 	return libpath.basename(filename).split('.')[0];
-}
+};
 function get_module_loader(module_dir){
 	if(module_dir){
 		return function (loadfn, file_name, env, ...envname){
-			const module_name = get_module_name(file_name);
+			const module_name = loadenv.module_name(file_name);
 			const path = libpath.resolve(module_dir, module_name);
 			const entries = loadenv(path, env, ...envname);
 			if(!match.function(loadfn)){
@@ -109,11 +109,12 @@ function get_module_loader(module_dir){
 		throw Error(`Invalid 'module_dir(${module_dir})'`);
 	}
 }
+
 loadenv.module = function (module_dir){
 	const module_loader = get_module_loader(module_dir);
 	return function load(filename, env, ...envname){
 		let loadfn = require(filename);
-		return load[get_module_name(filename)] = module_loader(loadfn, filename, env ? env : process.env.NODE_ENV, ...envname);
+		return load[loadenv.module_name(filename)] = module_loader(loadfn, filename, env ? env : process.env.NODE_ENV, ...envname);
 	};
 };
 module.exports = loadenv;
