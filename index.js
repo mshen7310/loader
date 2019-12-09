@@ -133,8 +133,11 @@ function require_parant(filename){
 loadenv.module = function (module_dir){
 	const module_loader = get_module_loader(module_dir);
 	return function load(filename, env, ...envname){
-		let loadfn = require_parant(filename);
-		return load[loadenv.module_name(filename)] = module_loader(loadfn, filename, env ? env : process.env.NODE_ENV, ...envname);
+		if(!load[loadenv.module_name(filename)]){
+			let loadfn = require_parant(filename);
+			load[loadenv.module_name(filename)] = module_loader(loadfn, filename, env ? env : process.env.NODE_ENV, ...envname);	
+		} 
+		return load[loadenv.module_name(filename)];
 	};
 };
 module.exports = loadenv;
