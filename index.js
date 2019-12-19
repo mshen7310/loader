@@ -76,7 +76,7 @@ function walk(dir, env, keep_top_level_container, envname){
 }
 function loadenv(fullpath, env, ...envname){
 	if(envname.length == 0){
-		envname = ['production', 'staging', 'testing'];
+		envname = ['production', 'staging', 'testing', 'development];
 	} else {
 		envname.sort();
 	}
